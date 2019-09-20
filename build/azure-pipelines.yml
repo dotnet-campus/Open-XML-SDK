@@ -21,80 +21,92 @@ stages:
           name: Hosted Windows 2019 with VS2019
         steps:
           - template: build.yml
-
-  - stage: PerformanceTests
+  - stage: PerformanceTesd
     jobs:
-    - template: perf.yml
-      parameters:
-        frameworks:
-          - tfm: net461
-            name: net461
-          - tfm: netcoreapp2.1
-            name: netcoreapp2_1
-    dependsOn: Build
-    condition: succeeded()
+      - job: P
+        pool:
+          name: Hosted Windows 2019 with VS2019
+        steps:
+            - task: PowerShell@2
+              displayName: 'Get variables'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  gci env:
 
-  - stage: UnitTests
-    jobs:
-    - template: test.yml
-      parameters:
-        frameworks:
-          - tfm: net452
-            name: net452
-          - tfm: net46
-            name: net46
-          - tfm: netcoreapp1.1
-            name: netcoreapp1_1
-          - tfm: netcoreapp2.1
-            name: netcoreapp2_1
-    dependsOn: Build
-    condition: succeeded()
+  # - stage: PerformanceTests
+  #   jobs:
+  #   - template: perf.yml
+  #     parameters:
+  #       frameworks:
+  #         - tfm: net461
+  #           name: net461
+  #         - tfm: netcoreapp2.1
+  #           name: netcoreapp2_1
+  #   dependsOn: Build
+  #   condition: succeeded()
 
-  - stage: Sign
-    jobs:
-    - job: Sign
-      displayName: Sign assemblies and package
-      pool:
-        name: Hosted Windows 2019 with VS2019
-      steps:
-        - template: sign.yml
-    dependsOn: Build
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  # - stage: UnitTests
+  #   jobs:
+  #   - template: test.yml
+  #     parameters:
+  #       frameworks:
+  #         - tfm: net452
+  #           name: net452
+  #         - tfm: net46
+  #           name: net46
+  #         - tfm: netcoreapp1.1
+  #           name: netcoreapp1_1
+  #         - tfm: netcoreapp2.1
+  #           name: netcoreapp2_1
+  #   dependsOn: Build
+  #   condition: succeeded()
+
+  # - stage: Sign
+  #   jobs:
+  #   - job: Sign
+  #     displayName: Sign assemblies and package
+  #     pool:
+  #       name: Hosted Windows 2019 with VS2019
+  #     steps:
+  #       - template: sign.yml
+  #   dependsOn: Build
+  #   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
   
-  - stage: MyGet
-    jobs:
-      - deployment: OpenXmlMyGet
-        displayName: Deploy to MyGet
-        pool:
-          name: Hosted Windows 2019 with VS2019
-        environment: 'openxmlsdk-dotnet-myget'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - template: nuget.yml
-                  parameters:
-                    feed: 'OpenXML MyGet Feed'
-    dependsOn: 
-      - Sign
-      - PerformanceTests
-      - UnitTests
-    condition: succeeded()
+  # - stage: MyGet
+  #   jobs:
+  #     - deployment: OpenXmlMyGet
+  #       displayName: Deploy to MyGet
+  #       pool:
+  #         name: Hosted Windows 2019 with VS2019
+  #       environment: 'openxmlsdk-dotnet-myget'
+  #       strategy:
+  #         runOnce:
+  #           deploy:
+  #             steps:
+  #               - template: nuget.yml
+  #                 parameters:
+  #                   feed: 'OpenXML MyGet Feed'
+  #   dependsOn: 
+  #     - Sign
+  #     - PerformanceTests
+  #     - UnitTests
+  #   condition: succeeded()
 
-  - stage: NuGet
-    jobs:
-      - deployment: OpenXmlNuGet
-        displayName: Deploy to NuGet
-        pool:
-          name: Hosted Windows 2019 with VS2019
-        environment: 'openxmlsdk-dotnet-nuget'
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - template: nuget.yml
-                  parameters:
-                    feed: 'OpenXML NuGet Feed'
+  # - stage: NuGet
+  #   jobs:
+  #     - deployment: OpenXmlNuGet
+  #       displayName: Deploy to NuGet
+  #       pool:
+  #         name: Hosted Windows 2019 with VS2019
+  #       environment: 'openxmlsdk-dotnet-nuget'
+  #       strategy:
+  #         runOnce:
+  #           deploy:
+  #             steps:
+  #               - template: nuget.yml
+  #                 parameters:
+  #                   feed: 'OpenXML NuGet Feed'
     dependsOn: 
       - MyGet
     # Only run this on tagged builds on master

@@ -1,38 +1,38 @@
 steps:
   - task: PowerShell@2
-    displayName: 'Update version'
+    displayName: 'Run GitVersion'
     inputs:
       targetType: 'inline'
       script: |
         dotnet tool install --global GitVersion.Tool --version 5.0.1        
         dotnet gitversion /output buildserver /nofetch
 
-  - task: VSBuild@1
-    displayName: 'Build SDK'
-    inputs:
-      solution: 'Open-XML-SDK.sln'
-      msbuildArgs: '/m /t:restore;build /p:ProjectLoadStyle=$(ProjectLoadStyle)'
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+  # - task: VSBuild@1
+  #   displayName: 'Build SDK'
+  #   inputs:
+  #     solution: 'Open-XML-SDK.sln'
+  #     msbuildArgs: '/m /t:restore;build /p:ProjectLoadStyle=$(ProjectLoadStyle)'
+  #     platform: '$(BuildPlatform)'
+  #     configuration: '$(BuildConfiguration)'
 
-  - task: VSBuild@1
-    displayName: 'Publish tests'
-    inputs:
-      solution: 'Open-XML-SDK.sln'
-      msbuildArgs: '/m /t:PublishAll /p:ProjectLoadStyle=$(ProjectLoadStyle)'
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+  # - task: VSBuild@1
+  #   displayName: 'Publish tests'
+  #   inputs:
+  #     solution: 'Open-XML-SDK.sln'
+  #     msbuildArgs: '/m /t:PublishAll /p:ProjectLoadStyle=$(ProjectLoadStyle)'
+  #     platform: '$(BuildPlatform)'
+  #     configuration: '$(BuildConfiguration)'
 
-  - publish: 'bin/$(BuildConfiguration)'
-    artifact: build
+  # - publish: 'bin/$(BuildConfiguration)'
+  #   artifact: build
 
-  - task: VSBuild@1
-    displayName: 'Pack SDK'
-    inputs:
-      msbuildArgs: '/t:pack /p:ProjectLoadStyle=$(ProjectLoadStyle) /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)/unsigned'
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+  # - task: VSBuild@1
+  #   displayName: 'Pack SDK'
+  #   inputs:
+  #     msbuildArgs: '/t:pack /p:ProjectLoadStyle=$(ProjectLoadStyle) /p:PackageOutputPath=$(Build.ArtifactStagingDirectory)/unsigned'
+  #     platform: '$(BuildPlatform)'
+  #     configuration: '$(BuildConfiguration)'
 
-  - publish: '$(Build.ArtifactStagingDirectory)/unsigned'
-    artifact: unsigned
-    displayName: 'Publish Unsigned Packages'
+  # - publish: '$(Build.ArtifactStagingDirectory)/unsigned'
+  #   artifact: unsigned
+  #   displayName: 'Publish Unsigned Packages'

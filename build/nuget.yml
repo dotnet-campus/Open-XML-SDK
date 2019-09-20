@@ -2,14 +2,19 @@ parameters:
   feed: ''
 
 steps:
-  - checkout: none
-
-  - download: current
-    artifact: signed
-
-  - task: NuGetCommand@2
+  - task: PowerShell@2
+    displayName: 'Get variables'
     inputs:
-      command: 'push'
-      packagesToPush: '$(Pipeline.Workspace)/signed/**/*.nupkg;!$(Pipeline.Workspace)/signed/**/*.symbols.nupkg'
-      nuGetFeedType: 'external'
-      publishFeedCredentials: ${{ parameters.feed }}
+      targetType: 'inline'
+      script: |
+        gci env:
+
+  # - download: current
+  #   artifact: signed
+
+  # - task: NuGetCommand@2
+  #   inputs:
+  #     command: 'push'
+  #     packagesToPush: '$(Pipeline.Workspace)/signed/**/*.nupkg;!$(Pipeline.Workspace)/signed/**/*.symbols.nupkg'
+  #     nuGetFeedType: 'external'
+  #     publishFeedCredentials: ${{ parameters.feed }}
