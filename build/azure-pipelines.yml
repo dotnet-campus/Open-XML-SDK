@@ -33,6 +33,7 @@ stages:
                 targetType: 'inline'
                 script: |
                   gci env:
+    dependsOn: Build
 
   # - stage: PerformanceTests
   #   jobs:
@@ -107,7 +108,7 @@ stages:
   #               - template: nuget.yml
   #                 parameters:
   #                   feed: 'OpenXML NuGet Feed'
-    dependsOn: 
-      - MyGet
-    # Only run this on tagged builds on master
-    condition: and(succeeded(), not(contains(variables['Build.BuildNumber'], '-ci.')), eq(variables['Build.SourceBranchName'], 'master'))
+    # dependsOn: 
+    #   - MyGet
+    # # Only run this on tagged builds on master
+    # condition: and(succeeded(), not(contains(variables['Build.BuildNumber'], '-ci.')), eq(variables['Build.SourceBranchName'], 'master'))
