@@ -56,6 +56,23 @@ namespace DocumentFormat.OpenXml.Framework.Metadata
         {
             var type = element.GetType();
 
+            // Use TryGetValue first for the common case of already existing types to limit number of allocations
+            if (_lookup.TryGetValue(type, out var result))
+            {
+                return result;
+            }
+
+            var metadata = CreateInternal(element);
+
+            _lookup.TryAdd(type, metadata);
+
+            return metadata;
+        }
+
+        public static ElementMetadata Create2(OpenXmlElement element)
+        {
+            var type = element.GetType();
+
             // Use GetOrAdd first for the common case of already existing types to limit number of allocations
             return _lookup.GetOrAdd(type, _ => CreateInternal(element));
         }
